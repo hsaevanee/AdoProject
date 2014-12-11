@@ -11,7 +11,7 @@
 	tr.odd {background-color: #66CCFF}
 	tr.even {background-color: #FFFFFF}
 </style>
-<title>Primary School Profile</title>
+<title>Primary School Profile Test Test</title>
 	<script type="text/javascript" src="<c:url value="/script/jquery-2.1.1.min.js"/>"></script>
 	<script type="text/javascript" src="<c:url value="/script/highcharts.js"/>"></script>
 	<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
