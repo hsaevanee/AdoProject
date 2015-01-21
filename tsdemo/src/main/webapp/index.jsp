@@ -12,8 +12,8 @@
 <title>Welcome</title>
 </head>
 <body>
-	<%-- <a href="${pageContext.request.contextPath}/user/list.html">List all data</a>
-	<br>  --%>
+	<!-- <a href="${pageContext.request.contextPath}/user/list.html">List all data</a>
+	<br>  --> 
 	<a href="${pageContext.request.contextPath}/user/listXLSX">Population by Ward</a>
 	<br>
 	<a href="${pageContext.request.contextPath}/user/primaryProfile.html">Primary School Profile</a>
@@ -21,6 +21,8 @@
 	<a href="${pageContext.request.contextPath}/user/listXLSX.html">Secondary School Profile</a>
 	<br>
 	<a href="${pageContext.request.contextPath}/user/listXLSX.html">High School Profile</a>
+	<br>
+	<a href="${pageContext.request.contextPath}/user/NationalityData.html">Nationality Data</a>
 	
 </body>
 </html>

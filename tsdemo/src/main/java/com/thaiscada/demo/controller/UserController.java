@@ -8,9 +8,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -20,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +41,9 @@ import com.thaiscada.demo.model.TableData;
 import com.thaiscada.demo.model.User;
 import com.thaiscada.demo.model.XLSXSampleData;
 import com.thaiscada.demo.service.UserService;
+import com.thaiscada.demo.model.NationalityData;
+import com.thaiscada.demo.model.CriteriaParameters;
+import com.thaiscada.demo.model.SexDatabyYear;
 
 @Controller
 public class UserController {
@@ -45,6 +58,7 @@ public class UserController {
 		logger.debug("home");
 		return "home";
 		}
+	
 	@RequestMapping(value = "/user/list")
 	public ModelAndView listOfUsers() {
 		ModelAndView modelAndView = new ModelAndView("user_list");
@@ -131,7 +145,190 @@ public class UserController {
 		modelAndView.addObject("XLSXcolName", XLSXcolName);		
 		return modelAndView;
 	}
+
 	
+	@RequestMapping(value = "/user/NationalityData", method = RequestMethod.GET)
+	public ModelAndView NationalityData() {
+		ModelAndView modelAndView = new ModelAndView("NationalityData");
+		
+		ArrayList<String> national = new ArrayList<String> (); 
+		ArrayList<String> gender = new ArrayList<String> ();
+		Set<String> snational = new HashSet<String>();
+		Set<String> sgender = new HashSet<String>();
+		// list of year
+		ArrayList<String> Years = new ArrayList<String> ();
+		Years.add("2012");
+		Years.add("2013");
+		
+		//
+		try {
+			
+			InputStream xlsxFileToRead = new FileInputStream("C:\\data\\TestData.xlsx");
+			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
+			XSSFSheet sheet = wb.getSheetAt(0);
+	
+	
+			for (int rowi=1; rowi<= 22357; rowi ++){
+				national.add(sheet.getRow(rowi).getCell(0).getStringCellValue());
+				gender.add(sheet.getRow(rowi).getCell(1).getStringCellValue());
+				//System.out.println("Row "+ rowi+ " "+"Value"+ sheet.getRow(rowi).getCell(0).getStringCellValue());
+			}
+						
+			for (String a: national)
+				snational.add(a);
+			System.out.println(snational.size() + " distinct nationality: " + snational);
+		
+			
+			for (String a: gender)
+				sgender.add(a);
+			System.out.println(sgender.size() + " distinct gender: " + sgender);
+			
+			
+						
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		modelAndView.addObject("sgender", sgender);
+		modelAndView.addObject("snational", snational);
+		modelAndView.addObject("syears", Years);
+		
+		return modelAndView;
+	}
+
+	@RequestMapping(value = "/user/getQueryNationalityData", method = RequestMethod.POST)
+	public @ResponseBody ArrayList<NationalityData> getQueryNationalityData(
+			@RequestBody CriteriaParameters mNationalParams) {
+		logger.debug("getQueryNationalityData");
+		
+		ArrayList<String> national = new ArrayList<String> (); 
+		ArrayList<String> gender = new ArrayList<String> ();
+		ArrayList<String> years = new ArrayList<String> ();
+		
+		System.out.println("Hello from getQueryNationalityData");
+		
+		for (String a: mNationalParams.getListCondition()){
+			switch (a.toLowerCase()){
+			case "2012": years.add("2012");	break;
+			case "2013": years.add("2013");	break;
+			case "F":	gender.add("F");	break;
+			case "M":	gender.add("M");	break;
+			case "01":	national.add("01");	break;
+			case "02":	national.add("02");	break;
+			case "03":	national.add("03");	break;
+			case "04":	national.add("04");	break;
+			case "05":	national.add("05");	break;
+			case "10":	national.add("10");	break;
+			case "98":	national.add("98");	break;
+			case "99":	national.add("99");	break;		
+			}
+
+		}
+						
+		ArrayList<NationalityData> listNationalData = new ArrayList<NationalityData>();
+
+		// row 1
+		NationalityData nationalData = new NationalityData();
+		nationalData.setNationality("Scottish");
+
+		ArrayList<SexDatabyYear> listNationalDataYear = new ArrayList<SexDatabyYear>();
+		
+		// random value
+		Random rand = new Random(); 
+
+		// row1, 2012
+		SexDatabyYear nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2012);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		// row1, 2013
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2013);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		nationalData.setListSexData(listNationalDataYear);
+		listNationalData.add(nationalData);
+
+		// row 2
+		nationalData = new NationalityData();
+		nationalData.setNationality("English");
+
+		listNationalDataYear = new ArrayList<SexDatabyYear>();
+
+		// row2, 2012
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2012);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		// row2, 2013
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2013);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		nationalData.setListSexData(listNationalDataYear);
+		listNationalData.add(nationalData);
+		
+		// row 2
+		nationalData = new NationalityData();
+		nationalData.setNationality("Welsh");
+
+		listNationalDataYear = new ArrayList<SexDatabyYear>();
+
+		// row2, 2012
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2012);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		// row2, 2013
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2013);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		nationalData.setListSexData(listNationalDataYear);
+		listNationalData.add(nationalData);
+		
+		// row 3
+		nationalData = new NationalityData();
+		nationalData.setNationality("British");
+
+		listNationalDataYear = new ArrayList<SexDatabyYear>();
+
+		// row2, 2012
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2012);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		// row2, 2013
+		nationalDataYear = new SexDatabyYear();
+		nationalDataYear.setYear(2013);
+		nationalDataYear.setTotalFemale(rand.nextInt(1000));
+		nationalDataYear.setTotalMale(rand.nextInt(1000));
+		listNationalDataYear.add(nationalDataYear);
+
+		nationalData.setListSexData(listNationalDataYear);
+		listNationalData.add(nationalData);
+
+		System.out.println("Bye from getQueryNationalityData "+listNationalData.size());
+		return listNationalData;
+		
+	
+	}
 	
 	@RequestMapping(value = "/user/primaryProfile")
 	public ModelAndView PrimaryProfile() {
@@ -623,10 +820,6 @@ public class UserController {
 			singlelistChartData.add(new ChartData("Aberdeen Start P1", listAbdnStartData)); // add School Start P1 data into list
 			singlelistChartData.add(new ChartData("Aberdeen End P1", listAbdnEndData)); // add School Start P1 data into list
 			pipsData.add(singlelistChartData);
-			
-			
-
-						
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -634,6 +827,7 @@ public class UserController {
 		}
 		return pipsData;
 	}
+	
 	public ArrayList<TableData> getTableData(String fileName, int sheetindex, int rowstart, int rowend, int colname, int coldstart, int coldend){
 		
 		String columnname = "";
