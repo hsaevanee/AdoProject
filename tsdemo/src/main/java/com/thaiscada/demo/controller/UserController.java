@@ -13,13 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -40,6 +34,7 @@ import com.thaiscada.demo.model.ChartData;
 import com.thaiscada.demo.model.TableData;
 import com.thaiscada.demo.model.User;
 import com.thaiscada.demo.model.XLSXSampleData;
+import com.thaiscada.demo.service.GenericService;
 import com.thaiscada.demo.service.UserService;
 import com.thaiscada.demo.model.NationalityData;
 import com.thaiscada.demo.model.CriteriaParameters;
@@ -49,6 +44,13 @@ import com.thaiscada.demo.model.SexDatabyYear;
 public class UserController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private GenericService genericService;
+	
+	// window
+	private String dataSourcePath="C:\\data\\";
+	// OS X
+	//private String dataSourcePath="/Users/Janny/Documents/data";
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(UserController.class);
@@ -75,7 +77,7 @@ public class UserController {
 						
 		try {
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\population_by_ward.xlsx");
+					dataSourcePath+"population_by_ward.xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(0);
 			for (int i = 0; i < sheet.getLastRowNum(); i++) {
@@ -153,180 +155,140 @@ public class UserController {
 		
 		ArrayList<String> national = new ArrayList<String> (); 
 		ArrayList<String> gender = new ArrayList<String> ();
-		Set<String> snational = new HashSet<String>();
-		Set<String> sgender = new HashSet<String>();
 		// list of year
 		ArrayList<String> Years = new ArrayList<String> ();
 		Years.add("2012");
 		Years.add("2013");
-		
-		//
-		try {
+
+		List listResult = genericService.getByNativeSQL("SELECT DISTINCT \"National_Identity\" FROM \"Nationality2012\"");
 			
-			InputStream xlsxFileToRead = new FileInputStream("C:\\data\\TestData.xlsx");
-			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
-			XSSFSheet sheet = wb.getSheetAt(0);
-	
-	
-			for (int rowi=1; rowi<= 22357; rowi ++){
-				national.add(sheet.getRow(rowi).getCell(0).getStringCellValue());
-				gender.add(sheet.getRow(rowi).getCell(1).getStringCellValue());
-				//System.out.println("Row "+ rowi+ " "+"Value"+ sheet.getRow(rowi).getCell(0).getStringCellValue());
+		if (listResult != null) {
+			for (Object itemRow : listResult) {
+				if (itemRow !=null){						
+					//Object[] listRow = (Object[]) itemRow;	
+					System.out.println(" distinct nationality: " + itemRow.toString());
+					national.add(itemRow.toString());
+				}
 			}
-						
-			for (String a: national)
-				snational.add(a);
-			System.out.println(snational.size() + " distinct nationality: " + snational);
-		
-			
-			for (String a: gender)
-				sgender.add(a);
-			System.out.println(sgender.size() + " distinct gender: " + sgender);
-			
-			
-						
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		
-		modelAndView.addObject("sgender", sgender);
-		modelAndView.addObject("snational", snational);
+
+		listResult = genericService.getByNativeSQL("SELECT DISTINCT \"Gender\" FROM \"Nationality2012\"");
+
+		if (listResult != null) {
+			for (Object itemRow : listResult) {
+				//Object[] listRow = (Object[]) itemRow;
+				//listResult return into array of string						
+				gender.add(itemRow.toString());
+			}
+		}
+
+
+		System.out.println(national.size() + " distinct nationality: " + national);
+
+		System.out.println(gender.size() + " distinct gender: " + gender);
+
+		modelAndView.addObject("sgender", gender);
+		modelAndView.addObject("snational", national);
 		modelAndView.addObject("syears", Years);
 		
 		return modelAndView;
 	}
 
 	@RequestMapping(value = "/user/getQueryNationalityData", method = RequestMethod.POST)
-	public @ResponseBody ArrayList<NationalityData> getQueryNationalityData(
+	public @ResponseBody ArrayList<ChartData> getQueryNationalityData(
 			@RequestBody CriteriaParameters mNationalParams) {
 		logger.debug("getQueryNationalityData");
 		
-		ArrayList<String> national = new ArrayList<String> (); 
-		ArrayList<String> gender = new ArrayList<String> ();
-		ArrayList<String> years = new ArrayList<String> ();
+		String query, queryfromDB = "";
+
+		ArrayList<ChartData> singlelistChartData = new ArrayList<ChartData>();		
+		List<Double> listDataseries; 
 		
-		System.out.println("Hello from getQueryNationalityData");
-		
-		for (String a: mNationalParams.getListCondition()){
-			switch (a.toLowerCase()){
-			case "2012": years.add("2012");	break;
-			case "2013": years.add("2013");	break;
-			case "F":	gender.add("F");	break;
-			case "M":	gender.add("M");	break;
-			case "01":	national.add("01");	break;
-			case "02":	national.add("02");	break;
-			case "03":	national.add("03");	break;
-			case "04":	national.add("04");	break;
-			case "05":	national.add("05");	break;
-			case "10":	national.add("10");	break;
-			case "98":	national.add("98");	break;
-			case "99":	national.add("99");	break;		
+		List listResult ;
+
+		for (String year: mNationalParams.getListConditionYear()){
+			if(year.equalsIgnoreCase("2012")){
+				// MS Access and MYSQL Query
+				//queryfromDB = " FROM Nationality2012";
+				//PostgreSql query
+				queryfromDB = " FROM \"Nationality2012\"";
+			}else{
+				// MS and MYSQL Query
+				//queryfromDB = " FROM Nationality2013";
+				//PostgreSql query
+				queryfromDB = " FROM \"Nationality2013\"";				
 			}
-
-		}
+			for (String gender: mNationalParams.getListConditionGender()){
+				listDataseries = new ArrayList<Double>();
+				for (String nationality:mNationalParams.getListConditionNationality()){
+					System.out.print("nationalitity =>"+ nationality);
+					if (gender.equalsIgnoreCase("TOTAL")){
+						// PostgreSql query
+						query = " SELECT \"National_Identity\", COUNT(*) ";
+						query += queryfromDB;
+						query += " WHERE \"National_Identity\" IN ('"+nationality+"')";
+						query += " GROUP BY \"National_Identity\"";
+						// MySQL and Access query
+//						query = " SELECT National_Identity, COUNT(*) ";
+//						query += queryfromDB;
+//						query += " WHERE National_Identity IN ('"+nationality+"')";
+//						query += " GROUP BY National_Identity";
 						
-		ArrayList<NationalityData> listNationalData = new ArrayList<NationalityData>();
 
-		// row 1
-		NationalityData nationalData = new NationalityData();
-		nationalData.setNationality("Scottish");
+					}else{
+						//PostgreSql query
+						query = " SELECT \"National_Identity\", COUNT(*)";
+						query += queryfromDB;
+						query += " WHERE \"National_Identity\" IN ('"+nationality+"')";						
+						query += " AND \"Gender\" IN ('"+gender+"')";
+						query += " GROUP BY \"National_Identity\", \"Gender\" ";
+						// MySQL and Access Query
+						//query = " SELECT National_Identity, COUNT(*)";
+//						query += queryfromDB;
+//						query += " WHERE National_Identity IN ('"+nationality+"')";						
+//						query += " AND Gender IN ('"+gender+"')";
+//						query += " GROUP BY National_Identity, Gender ";
 
-		ArrayList<SexDatabyYear> listNationalDataYear = new ArrayList<SexDatabyYear>();
+					}	
+					
+					listResult = genericService.getByNativeSQL(query);
+					if (listResult != null) {
+						for (Object itemRow : listResult) {
+							Object[] listRow = (Object[]) itemRow;	
+							listDataseries.add(Double.parseDouble(listRow[1].toString()));
+						}
+					}
+
+					query = "";			
+				}				
+				
+				singlelistChartData.add(new ChartData(gender.concat(year),listDataseries));
+				//sumData.add(singlelistChartData);
+			}
+		}
 		
-		// random value
-		Random rand = new Random(); 
-
-		// row1, 2012
-		SexDatabyYear nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2012);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		// row1, 2013
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2013);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		nationalData.setListSexData(listNationalDataYear);
-		listNationalData.add(nationalData);
-
-		// row 2
-		nationalData = new NationalityData();
-		nationalData.setNationality("English");
-
-		listNationalDataYear = new ArrayList<SexDatabyYear>();
-
-		// row2, 2012
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2012);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		// row2, 2013
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2013);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		nationalData.setListSexData(listNationalDataYear);
-		listNationalData.add(nationalData);
+		for (ChartData a:singlelistChartData){
+			System.out.println(" Cahrt name==>"+a.getName());
+			for (Double num: a.getData()){
+				System.out.print(" Chart Data Series ==>"+num);
+			}
+			System.out.println();
+		}
+//		if (listResult != null) {
+//			for (Object itemRow : listResult) {
+//				//System.out.print("itemRow ==>"+itemRow.toString());
+//				Object[] listRow = (Object[]) itemRow;
+//				System.out.print("	listRow0 ==>"+listRow[0].toString());
+//				System.out.print("	listRow1==>"+listRow[1].toString());
+//				System.out.print("	listRow2 ==>"+listRow[2].toString());
+//				for (Object itemColumn : listRow) {
+//					System.out.print(itemColumn.toString() + "#");
+//				}
+//				System.out.println();
+//			}
+//		}
 		
-		// row 2
-		nationalData = new NationalityData();
-		nationalData.setNationality("Welsh");
-
-		listNationalDataYear = new ArrayList<SexDatabyYear>();
-
-		// row2, 2012
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2012);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		// row2, 2013
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2013);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		nationalData.setListSexData(listNationalDataYear);
-		listNationalData.add(nationalData);
-		
-		// row 3
-		nationalData = new NationalityData();
-		nationalData.setNationality("British");
-
-		listNationalDataYear = new ArrayList<SexDatabyYear>();
-
-		// row2, 2012
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2012);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		// row2, 2013
-		nationalDataYear = new SexDatabyYear();
-		nationalDataYear.setYear(2013);
-		nationalDataYear.setTotalFemale(rand.nextInt(1000));
-		nationalDataYear.setTotalMale(rand.nextInt(1000));
-		listNationalDataYear.add(nationalDataYear);
-
-		nationalData.setListSexData(listNationalDataYear);
-		listNationalData.add(nationalData);
-
-		System.out.println("Bye from getQueryNationalityData "+listNationalData.size());
-		return listNationalData;
-		
+		return singlelistChartData;
 	
 	}
 	
@@ -344,7 +306,7 @@ public class UserController {
 		String temp = null;
 		 
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("C:\\data\\Schoolname.txt"));
+			BufferedReader br = new BufferedReader(new FileReader(dataSourcePath+"Schoolname.txt"));
 			
 			while ((temp = br.readLine())!=null){
 				ListSchoolname.add(temp);
@@ -369,7 +331,7 @@ public class UserController {
 		
 		try {
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(0);
 		
@@ -437,7 +399,7 @@ public class UserController {
 		try {
 		
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(3);
 			
@@ -467,7 +429,7 @@ public class UserController {
 	public ModelAndView Ethnicity(@PathVariable("schoolname") String schoolname) {
 		ModelAndView modelAndView = new ModelAndView("Ethnicity");
 		ArrayList<TableData> ethnicdata = new ArrayList<TableData>(); // Column_Name		
-		String Filename = "C:\\data\\"+schoolname+".xlsx";
+		String Filename = dataSourcePath+schoolname+".xlsx";
 		ethnicdata = getTableData(Filename,14,6,25,0,1,9);				
 		System.out.println("Size ==> " + ethnicdata.get(0).getData().size());
 		modelAndView.addObject("EthnicData", ethnicdata);	
@@ -479,7 +441,7 @@ public class UserController {
 	public ModelAndView Nationality(@PathVariable("schoolname") String schoolname) {
 		ModelAndView modelAndView = new ModelAndView("Nationality");
 		ArrayList<TableData> nationalitydata = new ArrayList<TableData>(); // Column_Name		
-		String Filename = "C:\\data\\"+schoolname+".xlsx";
+		String Filename = dataSourcePath+schoolname+".xlsx";
 		nationalitydata = getTableData(Filename,15,6,13,0,1,9);				
 		System.out.println("Size ==> " + nationalitydata.get(0).getData().size());
 		modelAndView.addObject("Nationality", nationalitydata);	
@@ -492,7 +454,7 @@ public class UserController {
 		ModelAndView modelAndView = new ModelAndView("Occupancy");
 		ArrayList<TableData> Occupancydata = new ArrayList<TableData>(); // Column_Name	
 		System.out.println("schoolname ==>" +schoolname);
-		String Filename = "C:\\data\\"+schoolname+".xlsx";
+		String Filename = dataSourcePath+schoolname+".xlsx";
 		Occupancydata = getTableData(Filename,2,7,53,0,1,3);				
 		System.out.println("Size ==> " + Occupancydata.get(0).getData().size());
 		modelAndView.addObject("Occupancy", Occupancydata);	
@@ -524,7 +486,7 @@ public class UserController {
 		try {
 		
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(7);
 			
@@ -599,7 +561,7 @@ public class UserController {
 		try {
 		
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(8);
 			
@@ -663,7 +625,7 @@ public class UserController {
 		try {
 		
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(1);
 			
@@ -717,7 +679,7 @@ public class UserController {
 		try {
 		
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(9);
 			
@@ -773,7 +735,7 @@ public class UserController {
 		try {
 		
 			InputStream xlsxFileToRead = new FileInputStream(
-					"C:\\data\\"+sSchoolNameText+".xlsx");
+					dataSourcePath+sSchoolNameText+".xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(xlsxFileToRead);
 			XSSFSheet sheet = wb.getSheetAt(6);
 			
