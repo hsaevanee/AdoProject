@@ -4,39 +4,48 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Occupancy</title>
-<style type="text/css">
-	tr.head {background-color: #3399FF}
-	tr.odd {background-color: #66CCFF}
-	tr.even {background-color: #FFFFFF}
-</style>
+<link rel="stylesheet" type="text/css" href="<c:url value="/css/style.css" />">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
 </head>
 <body>
-<h1>${SchoolName} Nationality</h1>
-<br>
-<h2>Nationality - Primary Schools (%pupils)</h2>
 
-	<table>
-		<tr class='head'>
-			<td>School Name</td>
-			<td>School Roll** 2013/14</td>
-			<td>Revised Capacity 2010*</td>
-			<td>School Occupancy 2013/14 based on 2010 capacities (%)</td>
-		</tr>
-		<c:forEach var="Occupancydata" items="${Occupancy}" varStatus="loopStatus">
-		<tr class="${loopStatus.index % 2 == 0 ? 'even' : 'odd'}">
-			<td>${Occupancydata.name}</td>
-			<c:forEach var="data" items="${Occupancydata.data}" varStatus="loopStatus">
-				<td>${data}</td>
-			</c:forEach>
-		</tr>
-		<tr><td></td></tr>
-		</c:forEach>
-	</table>
-*Note: Revised Capacity  2010 figures used (Approved at ECS Committee 18/02/10)
-<br>
-**Note: Source Pupil Census 2013
-
+	<div id="container">
+		<div id="header">
+			<h1>Aberdeen City Council Digital Data Observatory Project</h1>
+		</div>
+		<div id="content">
+			<div id="nav">
+				<%@ include file="/css/menu.txt" %>			
+			</div>
+			<div id="main">
+				<h2>${SchoolName}Nationality</h2>				
+				<h3>Nationality - Primary Schools (%pupils)</h3>
+				<table>
+					<tr>
+						<th>School Name</th>
+						<th>School Roll** 2013/14</th>
+						<th>Revised Capacity 2010*</th>
+						<th>School Occupancy 2013/14 based on 2010 capacities (%)</th>
+					</tr>
+					<c:forEach var="Occupancydata" items="${Occupancy}"
+						varStatus="loopStatus">
+						<tr class="${loopStatus.index % 2 == 0 ? 'even' : 'odd'}">
+							<td>${Occupancydata.name}</td>
+							<c:forEach var="data" items="${Occupancydata.data}"
+								varStatus="loopStatus">
+								<td>${data}</td>
+							</c:forEach>
+						</tr>
+					</c:forEach>
+				</table>
+				<p>
+				*Note: Revised Capacity 2010 figures used (Approved at ECS Committee
+				18/02/10) <br> **Note: Source Pupil Census 2013
+				</p>
+			</div>
+		</div>
+		<div id="footer">Aberdeen City Council</div>
+	</div>
 </body>
 </html>

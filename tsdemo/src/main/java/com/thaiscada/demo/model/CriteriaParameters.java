@@ -24,7 +24,16 @@ public class CriteriaParameters {
 			ArrayList<String> listConditionNationality) {
 		this.listConditionNationality = listConditionNationality;
 	}
+	public ArrayList<String> getListConditionDecile() {
+		return listConditionDecile;
+	}
+	public void setListConditionDecile(
+			ArrayList<String> listConditionDecile) {
+		this.listConditionDecile = listConditionDecile;
+	}
+
 	private ArrayList<String> listConditionGender;
 	private ArrayList<String> listConditionNationality;
+	private ArrayList<String> listConditionDecile;
 	
 }

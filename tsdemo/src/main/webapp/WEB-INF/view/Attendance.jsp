@@ -5,12 +5,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<style type="text/css">
-	tr.head {background-color: #3399FF}
-	tr.odd {background-color: #66CCFF}
-	tr.even {background-color: #FFFFFF}
-</style>
+<link rel="stylesheet" type="text/css" href="<c:url value="/css/style.css" />">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
 <title>Attendance</title>
 	<script type="text/javascript" src="<c:url value="/script/jquery-2.1.1.min.js"/>"></script>
 	<script type="text/javascript" src="<c:url value="/script/highcharts.js"/>"></script>
@@ -191,21 +187,40 @@
 </head>
 <body>
 
-<h1>${SchoolName} Absence</h1>	
+	<div id ="container">
+ 		<div id="header">
+ 			<h1> Aberdeen City Council Digital Data Observatory Project</h1>
+ 		</div>
+ 		<div id = "content">
+ 			<div id="nav">
+				<%@ include file="/css/menu.txt" %>
+ 			</div> 		
+			<div id="main">
+				<h2>${SchoolName}Absence</h2>
+				<h3>
+					<a href="">Authorised Absence</a>
+				</h3>
+				<br>
+				<div id="divChartAuthrisedContainer"></div>
+				<h3>
+					<a href="">Unauthorised Absence</a>
+				</h3>
+				<br>
+				<div id="divChartUnauthrisedContainer"></div>
+				<h3>
+					<a href="">Total Absence</a>
+				</h3>
+				<br>
+				<div id="divChartTotalContainer"></div>
+
+			</div>
+ 		</div>
+ 		<div id="footer">
+ 			Aberdeen City Council 
+ 		</div>
+ 	</div>
 
 
-<h2> <a href="">Authorised Absence</a></h2>
-<br>	
-<div id="divChartAuthrisedContainer">
-</div>
-<h2> <a href="">Unauthorised Absence</a></h2>
-<br>	
-<div id="divChartUnauthrisedContainer">
-</div>
-<h2> <a href="">Total Absence</a></h2>
-<br>	
-<div id="divChartTotalContainer">
-</div>
 
 </body>
 </html>

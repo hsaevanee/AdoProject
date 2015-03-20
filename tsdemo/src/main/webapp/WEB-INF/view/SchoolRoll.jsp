@@ -5,12 +5,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<style type="text/css">
-	tr.head {background-color: #3399FF}
-	tr.odd {background-color: #66CCFF}
-	tr.even {background-color: #FFFFFF}
-</style>
+<link rel="stylesheet" type="text/css" href="<c:url value="/css/style.css" />">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
 <title>SchoolRoll</title>
 	<script type="text/javascript" src="<c:url value="/script/jquery-2.1.1.min.js"/>"></script>
 	<script type="text/javascript" src="<c:url value="/script/highcharts.js"/>"></script>
@@ -107,14 +103,24 @@
 </script>		
 </head>
 <body>
-
-<h1>${SchoolName}</h1>	
-
-
-<h2> School Roll (Pupil Census) </h2>
-<br>	
-<div id="divChartContainer">
-</div>
-
+ 	<div id ="container">
+ 		<div id="header">
+ 			<h1> Aberdeen City Council Digital Data Observatory Project</h1>
+ 		</div>
+ 		<div id = "content">
+ 			<div id="nav">
+				<%@ include file="/css/menu.txt" %>
+ 			</div> 		
+			<div id="main"> 		
+				<h2>${SchoolName}</h2>	
+				<h3> School Roll (Pupil Census) </h3>
+				<br>	
+				<div id="divChartContainer"></div>
+			</div>
+ 		</div>
+ 		<div id="footer">
+ 			Aberdeen City Council 
+ 		</div>
+ 	</div>
 </body>
 </html>

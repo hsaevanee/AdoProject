@@ -1,16 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<style type="text/css">
-	tr.head {background-color: #3399FF}
-	tr.odd {background-color: #66CCFF}
-	tr.even {background-color: #FFFFFF}
-</style>
+<link rel="stylesheet" type="text/css" href="<c:url value="/css/style.css" />">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
 <title>Primary School Profile</title>
 	<script type="text/javascript" src="<c:url value="/script/jquery-2.1.1.min.js"/>"></script>
 	<script type="text/javascript" src="<c:url value="/script/highcharts.js"/>"></script>
@@ -141,69 +137,79 @@
 		    });
 		}
 		
-		
-		
+
 		function goToCreateURL(object) {
 			var sSchoolNameText = $('#selectSchoolname option:selected').text();
 			return object.href += sSchoolNameText;
 		}
 
 </script>		
+ 
 </head>
-<body>
- <h1>Primary School Profile</h1>
-			
-			
 
-<div id="divCriteria">
-	<h2>Select School </h2>
-	<select id="selectSchoolname"></select>
-</div>
+<body>
+
+<div id ="container">
+	<div id="header">
+		<h1> Aberdeen City Council Digital Data Observatory Project</h1>
+	</div>		
+	<div id = "content">
+		<div id="nav">
+			<%@ include file="/css/menu.txt" %> 		
+		</div> 		
+		<div id="main">				
+			<h1>Primary School Profile</h1>
+			<div id="divCriteria">				
+				<h3>Select School </h3>
+				<select id="selectSchoolname"></select>
+			</div>
  
- <h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/SchoolRoll/">School Roll</a> </h2>
- 
-	<table>
+ 			<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/SchoolRoll/">School Roll</a> </h3>
+			<table>
+					<tr>
+						<td>Total School Roll</td>
+						<td><span id="span0"></span></td>
+					</tr>
+					<tr>
+						<td>Capacity (2010 Based)</td>
+						<td><span id="span1"></span></td>
+					</tr>
+					<tr>
+						<td>% Occupancy 2013/14 (based on 2010 Capacity)</td>
+						<td><span id="span2"></span></td>
+					</tr>
+			</table>
+
+				<h3>
+					<a onclick="goToCreateURL(this)"
+						href="${pageContext.request.contextPath}/user/PIPS/"> PIPS </a>
+				</h3>
+				<table>
+					<tr>
+						<th></th>
+						<th>School Start P1</th>
+						<th>Aberdeen Start P1</th>
+						<th>School End Start P1</th>
+						<th>Aberdeen End P1</th>
+
+					</tr>
+					<tr>
+						<td>Reading</td>
+						<td><span id="span3"></span></td>
+						<td><span id="span4"></span></td>
+						<td><span id="span5"></span></td>
+						<td><span id="span6"></span></td>
+					</tr>
+					<tr>
+						<td>Mathematics</td>
+						<td><span id="span7"></span></td>
+						<td><span id="span8"></span></td>
+						<td><span id="span9"></span></td>
+						<td><span id="span10"></span></td>
+					</tr>
+				</table>
+				<table>
 		<tr>
-				<td>Total School Roll</td>			
-		 		<td><span id="span0"></span></td>	
-		</tr>
-		<tr>
-				<td>Capacity (2010 Based)</td>			
-		 		<td><span id="span1"></span></td>	
-		 </tr>	
-		<tr>
-				<td>% Occupancy 2013/14 (based on 2010 Capacity) </td>			
-		 		<td><span id="span2"></span></td>	
-		 </tr> 
-	</table>
-	
- <h2><a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/PIPS/"> PIPS </a></h2>
-	 <table>
-		<tr class='head'>
-				<th> </th>			
-		 		<th>School Start P1</th>
-		 		<th>Aberdeen Start P1</th>
-		 		<th>School End Start P1</th>
-		 		<th>Aberdeen End P1</th>
-		 			
-		 </tr>
-		<tr class='even'>
-				<td>Reading</td>			
-		 		<td><span id="span3"></span></td>
-		 		<td><span id="span4"></span></td>
-		 		<td><span id="span5"></span></td>
-		 		<td><span id="span6"></span></td>
-		 </tr>
-		<tr  class='odd'>
-				<td>Mathematics</td>			
-		 		<td><span id="span7"></span></td>
-		 		<td><span id="span8"></span></td>
-		 		<td><span id="span9"></span></td>
-		 		<td><span id="span10"></span></td>
-		 </tr>	 
-	</table>
-	<table>
-		<tr class='head'>
 				<th> </th>			
 		 		<th>School P3</th>
 		 		<th>Aberdeen P3</th>		 			
@@ -213,14 +219,14 @@
 		 		<td><span id="span11"></span></td>
 		 		<td><span id="span12"></span></td>
 		 </tr>	
-		<tr class='odd'>
+		<tr>
 				<td>Mathematics</td>			
 		 		<td><span id="span13"></span></td>
 		 		<td><span id="span14"></span></td>
 		 </tr>	 
 	</table>
 		<table>
-		<tr class='head'>
+		<tr>
 				<th> </th>			
 		 		<th>School P5</th>
 		 		<th>Aberdeen P5</th>		 			
@@ -230,14 +236,14 @@
 		 		<td><span id="span15"></span></td>
 		 		<td><span id="span16"></span></td>
 		 </tr>	
-		<tr class='odd'>
+		<tr>
 				<td>Mathematics</td>			
 		 		<td><span id="span17"></span></td>
 		 		<td><span id="span18"></span></td>
 		 </tr>	 
 	</table>
 	<table>
-		<tr class='head'>
+		<tr>
 				<th> </th>			
 		 		<th>School P7</th>
 		 		<th>Aberdeen P7</th>		 			
@@ -247,17 +253,17 @@
 		 		<td><span id="span19"></span></td>
 		 		<td><span id="span20"></span></td>
 		 </tr>	
-		<tr class='odd'>
+		<tr>
 				<td>Mathematics</td>			
 		 		<td><span id="span21"></span></td>
 		 		<td><span id="span22"></span></td>
 		 </tr>	 
 	</table>
 	
-<h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Attendance/">Attendance</a> </h2>
+<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Attendance/">Attendance</a> </h3>
 
 	 <table>
-		<tr class='head'>
+		<tr>
 				<th> </th>			
 		 		<th>School</th>
 		 		<th>City</th>	 		
@@ -267,7 +273,7 @@
 		 		<td><span id="span23"></span></td>
 		 		<td><span id="span24"></span></td>
 		</tr>	
-		<tr class='odd'>
+		<tr>
 				<td>% Unauthorised Absence</td>			
 		 		<td><span id="span25"></span></td>
 		 		<td><span id="span26"></span></td>
@@ -279,9 +285,9 @@
 		 </tr>	 		 
 	</table>
 	
-	<h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Exclusions/">Exclusions Annual</a> </h2>
+	<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Exclusions/">Exclusions Annual</a> </h3>
 	 <table>
-		<tr class='head'>
+		<tr>
 				<th> </th>			
 		 		<th>School</th>
 		 		<th>City</th>	 		
@@ -291,17 +297,17 @@
 		 		<td><span id="span29"></span></td>
 		 		<td><span id="span30"></span></td>
 		</tr>	
-		<tr class='odd'>
+		<tr>
 				<td>Data of Removals from the Register</td>			
 		 		<td><span id="span31"></span></td>
 		 		<td><span id="span32"></span></td>
 		</tr>	 
 	</table>
 	
-	<h2><a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Violent/"> Violent Incidents  Annual</a></h2>
+	<h3><a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Violent/"> Violent Incidents  Annual</a></h3>
 	
 	 <table>
-		<tr class='head'>
+		<tr>
 				<th> </th>			
 		 		<th>School</th>
 		 		<th>City</th>	 		
@@ -311,7 +317,7 @@
 		 		<td><span id="span33"></span></td>
 		 		<td><span id="span34"></span></td>
 		</tr>	
-		<tr class='odd'>
+		<tr>
 				<td>Data of Violent Incidents Reported Per 100 </td>			
 		 		<td><span id="span35"></span></td>
 		 		<td><span id="span36"></span></td>
@@ -319,16 +325,21 @@
 	</table>
 	
 <br>
-<h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/SIMD/">Scottish Index of Multiple Deprivation</a></h2>
+<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/SIMD/">Scottish Index of Multiple Deprivation</a></h3>
 <br>	
-<div id="divChartContainer">
+<div id="divChartContainer" >
 </div>
 
-<h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Ethnicity/">Ethnicity</a></h2>
+<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Ethnicity/">Ethnicity</a></h3>
 <br>
-<h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Nationality/">Nationality</a></h2>
+<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Nationality/">Nationality</a></h3>
 <br>
-<h2> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Occupancy/">Occupancy</a></h2>
-
+<h3> <a onclick="goToCreateURL(this)" href="${pageContext.request.contextPath}/user/Occupancy/">Occupancy</a></h3>
+		 </div>
+		 <div id="footer">
+ 			Aberdeen city Council, Marishall Colleage
+ 		</div>
+</div>
+</div>
 </body>
 </html>

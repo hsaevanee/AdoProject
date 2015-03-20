@@ -12,6 +12,8 @@
 
 
 	<mvc:annotation-driven />
+	
+	<mvc:resources mapping="/css/**" location="/css/" />
 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -21,6 +23,9 @@
 	</bean>
 
 	<context:component-scan base-package="com.thaiscada.demo" />
+	<context:component-scan base-package="com.thaiscada.demo.controller" />
+	<context:component-scan base-package="com.thaiscada.demo.model" />
+	<context:component-scan base-package="com.thaiscada.demo.service" />
 
 
 	<!-- JDBC Data Source for MySQL -->
@@ -33,23 +38,22 @@
 <!-- 		<property name="validationQuery" value="SELECT 1" /> -->
 <!-- 	</bean> -->
 	
- 	<!-- JDBC Data Source for MS Access --> 
-<!-- 	<bean id="tsDataSource" class="org.apache.commons.dbcp.BasicDataSource" -->
-<!-- 		destroy-method="close"> -->
-<!-- 		<property name="driverClassName" value="net.ucanaccess.jdbc.UcanaccessDriver" /> -->
-<!-- 		<property name="url" value="jdbc:ucanaccess://c:/data/Database1.accdb" /> -->
-<!-- 	</bean> -->
-
-	<!-- JDBC Data Source for Postgres -->
-	<bean id="tsDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+ <!-- JDBC Data Source for PostgreSQL -->
+	<bean id="tsDataSourcePostgreSQL" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="url" value="jdbc:postgresql://localhost:5432/Database1" />
 		<property name="username" value="postgres" />
 		<property name="password" value="1234" />
-		<property name="validationQuery" value="SELECT 1" />
 	</bean>
-
+	
+	<!-- JDBC Data Source for MS Access -->
+	<bean id="tsDataSourceMSAccess" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="net.ucanaccess.jdbc.UcanaccessDriver" />
+		<property name="url" value="jdbc:ucanaccess://c:/data/Database1.accdb" />
+	</bean>
+	
 	<!-- Hibernate Session Factory for MySQL-->
 <!-- 	<bean id="tsSessionFactory" -->
 <!-- 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"> -->
@@ -66,26 +70,10 @@
 <!-- 		</property> -->
 <!-- 	</bean> -->
 	
-	<!-- Hibernate Session Factory for MS Access-->
-<!-- 	<bean id="tsSessionFactory" -->
-<!-- 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"> -->
-<!-- 		<property name="dataSource" ref="tsDataSource" /> -->
-<!-- 		<property name="packagesToScan"> -->
-<!-- 			<array> -->
-<!-- 				<value>com.thaiscada.demo</value> -->
-<!-- 			</array> -->
-<!-- 		</property> -->
-<!-- 		<property name="hibernateProperties"> -->
-<!-- 			<value> -->
-<!-- 				hibernate.dialect=org.hibernate.dialect.SQLServerDialect -->
-<!-- 			</value> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
-
-	<!-- Hibernate Session Factory for PostgreSQL-->
-	<bean id="tsSessionFactory"
+	<!-- Hibernate Session Factory for PostgreSQL -->
+	<bean id="tsSessionFactoryPostgreSQL"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="tsDataSource" />
+		<property name="dataSource" ref="tsDataSourcePostgreSQL" />
 		<property name="packagesToScan">
 			<array>
 				<value>com.thaiscada.demo</value>
@@ -97,14 +85,39 @@
 			</value>
 		</property>
 	</bean>
-
-
-	<!-- Hibernate Transaction Manager -->
-	<bean id="transactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="tsSessionFactory" />
+	
+	<!-- Hibernate Session Factory for MS Access -->
+	<bean id="tsSessionFactoryMSAccess"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="tsDataSourceMSAccess" />
+		<property name="packagesToScan">
+			<array>
+				<value>com.thaiscada.demo</value>
+			</array>
+		</property>
+		<property name="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.SQLServerDialect
+			</value>
+		</property>
 	</bean>
 
-	<!-- Activates annotation based transaction management -->
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- Hibernate Transaction Manager PostgreSQL -->
+	<bean id="transactionManagerPostgreSQL"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="tsSessionFactoryPostgreSQL" />
+	</bean>
+	
+	<!-- Hibernate Transaction Manager MS Access -->
+	<bean id="transactionManagerMSAccess"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="tsSessionFactoryMSAccess" />
+	</bean>
+	
+
+	<!-- Activates annotation based transaction management PostgreSQL -->
+	<tx:annotation-driven transaction-manager="transactionManagerPostgreSQL" />
+	
+	<!-- Activates annotation based transaction management MS Access -->
+	<tx:annotation-driven transaction-manager="transactionManagerMSAccess" />
 </beans>

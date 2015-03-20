@@ -5,12 +5,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<style type="text/css">
-	tr.head {background-color: #3399FF}
-	tr.odd {background-color: #66CCFF}
-	tr.even {background-color: #FFFFFF}
-</style>
+<link rel="stylesheet" type="text/css" href="<c:url value="/css/style.css" />">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
 <title>Scottish Index of Multiple Deprivation</title>
 	<script type="text/javascript" src="<c:url value="/script/jquery-2.1.1.min.js"/>"></script>
 	<script type="text/javascript" src="<c:url value="/script/highcharts.js"/>"></script>
@@ -98,15 +94,33 @@
 </head>
 <body>
 
-<h1>${SchoolName}</h1>	
-<h2> Scottish Index of Multiple Deprivation</h2>
-<br>	
-<div id="divChartContainer">
-</div>
-
-<p>
-Scottish Index of Multiple Deprivation ( SIMD) 2012 identifies small area concentrations of multiple deprivation across all of Scotland in a consistent way. The school census data was collected and matched at an individual pupil level to each data zone and decile (decile1 being the 10% most deprived areas in Scotland upto decile 10 the least deprived). Pupil level data was then analysed by school to produce the tables and charts above. This gives the distribution of pupils in each school by the datazone and respective decile. NB data includes pupils who live in Aberdeenshire but attend City schools. 
-</p>
+	<div id="container">
+		<div id="header">
+			<h1>Aberdeen City Council Digital Data Observatory Project</h1>
+		</div>
+		<div id="content">
+			<div id="nav">
+				<%@ include file="/css/menu.txt" %>
+			</div>
+			<div id="main">
+				<h2>${SchoolName}</h2>
+				<h3>Scottish Index of Multiple Deprivation</h3>
+				<br>
+				<div id="divChartContainer"></div>
+				<p>Scottish Index of Multiple Deprivation ( SIMD) 2012
+					identifies small area concentrations of multiple deprivation across
+					all of Scotland in a consistent way. The school census data was
+					collected and matched at an individual pupil level to each data
+					zone and decile (decile1 being the 10% most deprived areas in
+					Scotland upto decile 10 the least deprived). Pupil level data was
+					then analysed by school to produce the tables and charts above.
+					This gives the distribution of pupils in each school by the
+					datazone and respective decile. NB data includes pupils who live in
+					Aberdeenshire but attend City schools.</p>
+			</div>
+		</div>
+		<div id="footer">Aberdeen City Council</div>
+	</div>
 
 </body>
 </html>
